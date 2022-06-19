@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "string.h": "c"
+        "*.txt": "plaintext",
+        "string.h": "c",
+        "time.h": "c"
     }
 }
