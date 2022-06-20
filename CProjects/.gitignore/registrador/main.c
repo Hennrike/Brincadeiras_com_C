@@ -4,6 +4,7 @@
 #include <time.h>
 
 FILE *fp, *fptemp;
+char cpftemp[15];
 time_t ano;
 char strtemp[15];
 int flag = 0;
@@ -38,11 +39,37 @@ void registrar()
 
     printf("Nome: ");
     gets(pessoa.nome);
-    printf("Ano de nascimento: ");
-    scanf("%i", &pessoa.nasc);
-    fflush(stdin);
+    printf("%s\n", pessoa.nome);
+
+    do{
+        printf("Ano de nascimento: ");
+        scanf("%i", &pessoa.nasc);
+        fflush(stdin);
+        if(pessoa.nasc > ano){
+            system("cls");
+            printf("Ano invalido, tente novamente...\n");
+        }
+    }while(pessoa.nasc > ano);
+    
     printf("CPF: ");
-    gets(pessoa.cpf);
+    gets(cpftemp);
+    fp = fopen("arquivo.txt", "rb+");
+    while(fread(&pessoa, sizeof(pessoa), 1, fp)==1){
+        printf("%s", pessoa.nome);
+        if(strcmp(pessoa.cpf, cpftemp)==0 || feof(fp)){
+            break;
+            }
+        }
+    while(strcmp(pessoa.cpf, cpftemp)==0){
+        system("cls");
+        printf("Este CPF ja foi cadastrado! Tente novamente...\n");
+        printf("CPF: ");
+        gets(cpftemp);
+    }
+    fclose(fp);
+    strcpy(pessoa.cpf, cpftemp);
+    printf("%s\n", pessoa.nome);
+
     printf("Numero de telefone: ");
     gets(pessoa.fone);
     printf("E-Mail: ");
@@ -52,12 +79,8 @@ void registrar()
 
     sprintf(strtemp, "%i", ano-pessoa.nasc);
     strcpy(pessoa.idade, strtemp);
-
     if (ano-pessoa.nasc == 0){
         strcpy(pessoa.idade, "recem-nascido");
-    }
-    else if (ano-pessoa.nasc < 0){
-        strcpy(pessoa.idade, "invalidado");
     }
     
     fp = fopen("arquivo.txt", "ab+");
@@ -70,7 +93,6 @@ void registrar()
 void pesquisar()
 {
     setlocale(LC_ALL, "");
-    char cpftemp[150];
 
     fflush(stdin);
     printf("Digite o CPF do usuario: ");
@@ -117,7 +139,15 @@ void modificar()
     {
         if(strcmp(pessoa.cpf, cpftemp)==0)
         {
-            printf("O que deseja alterar?:\n\n[1] Nome\n[2] Ano de Nascimento\n[3] Telefone\n[4] E-Mail\n[5] Endereco\n>> ");
+            printf("Usuario encontrado!\n\n");
+            printf("Nome: %s\n", pessoa.nome);
+            printf("Idade: %s\n", pessoa.idade);
+            printf("Ano de Nascimento: %i\n", pessoa.nasc);
+            printf("CPF: %s\n", pessoa.cpf);
+            printf("Numero de Telefone: %s\n", pessoa.fone);
+            printf("E-Mail: %s\n", pessoa.email);
+            printf("Endereco: %s\n", pessoa.endereco);
+            printf("\nO que deseja alterar?:\n\n[1] Nome\n[2] Ano de Nascimento\n[3] Telefone\n[4] E-Mail\n[5] Endereco\n>> ");
             scanf("%i", &op);
             fflush(stdin);
 
@@ -136,19 +166,20 @@ void modificar()
                 break;
 
             case 2:
-                printf("Ano de nascimento: ");
-                scanf("%i", &pessoatemp.nasc);
-                fflush(stdin);
+                do{
+                    printf("Ano de nascimento: ");
+                    scanf("%i", &pessoatemp.nasc);
+                    fflush(stdin);
+                    if(pessoatemp.nasc > ano){
+                        system("cls");
+                        printf("Ano invalido, tente novamente...\n");
+                    }
+                }while(pessoatemp.nasc > ano);
                 sprintf(strtemp, "%i", ano-pessoatemp.nasc);
                 strcpy(pessoatemp.idade, strtemp);
-
                 if (ano-pessoatemp.nasc == 0){
                     strcpy(pessoatemp.idade, "recem-nascido");
                 }
-                else if (ano-pessoatemp.nasc < 0){
-                    strcpy(pessoatemp.idade, "invalidado");
-                }
-                break;
 
             case 3:
                 printf("Numero de telefone: ");
