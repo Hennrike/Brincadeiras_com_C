@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 #include <string.h>
 
@@ -6,7 +7,7 @@ int main()
 {
     FILE *fp;
     int num = 2022;
-    char word[10] = "coding ";
+    char word[4] = "2004";
     char num2[17] = "Henrique Martins";
 
     struct Student{
@@ -15,11 +16,7 @@ int main()
         int sla;
     }aluno;
 
-    fp = fopen("teste.txt", "wb+");
-    fwrite(&aluno, sizeof(aluno), 1, fp);
-    fclose(fp);
-
-    fp = fopen("teste.txt", "rb+");
-    printf("%i\n", fread(&aluno, sizeof(aluno), 1, fp));
-    fclose(fp);
+    char *ptr;
+    strtol(word, &ptr, 10);
+    printf("%i", word);
 }

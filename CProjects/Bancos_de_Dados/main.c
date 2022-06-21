@@ -36,6 +36,26 @@ struct temp
     char endereco[150];
 }pessoatemp;
 
+int metodos[6] =
+{
+    pessoa.cpf,
+    pessoa.nome,
+    pessoa.idade,
+    pessoa.fone,
+    pessoa.email,
+    pessoa.endereco
+};
+
+char msgs[6][50] =
+{
+    "Digite o CPF: ",
+    "Digite o Nome: ",
+    "Digite a idade: ",
+    "Digite o numero de telefone: ",
+    "Digite o E-Mail: ",
+    "Digite o Endereco: "
+};
+
 void validar(char *var, char msg[100]){
     while(strlen(var) == 0){
         system("cls");
@@ -107,15 +127,25 @@ void pesquisar()
 {
     setlocale(LC_ALL, "");
 
+    printf("Selecione o metodo de pesquisa:\n");
+    printf("[1] CPF\n[2] Nome\n[3] Idade\n[4] Telefone\n[5] E-Mail\n[6] Endereco\n>> ");
+    scanf("%i", &op);
     fflush(stdin);
-    printf("Digite o CPF: ");
-    gets(cpftemp);
-    validar(cpftemp, "Digite o CPF: ");
+    while(op<1 && op>6){
+        system("cls");
+        printf("[1] CPF\n[2] Nome\n[3] Idade\n[4] Telefone\n[5] E-Mail\n[6] Endereco\n>> ");
+        scanf("%i", &op);
+        fflush(stdin);
+    }
+    op -= 1;
+    system("cls");
+    printf("%s", msgs[op]);
+    gets(strtemp);
 
     fp = fopen("arquivo.txt", "rb");
-    while(fread(&pessoa, sizeof(struct dados), 1, fp)==1)
+    while(fread(&pessoa, sizeof(pessoa), 1, fp)==1)
     {
-        if(strcmp(pessoa.cpf, cpftemp)==0)
+        if(strcmp(metodos[op], strtemp)==0)
         {
             flag++;
             printf("Exibindo cadastro...\n\n");
@@ -141,7 +171,6 @@ void modificar()
 {
     setlocale(LC_ALL, "");
     ano = time(NULL)/60/60/24/30/12+1969;
-    char cpftemp[150];
 
     fflush(stdin);
     printf("Digite o CPF do cadastro que deseja alterar: ");
@@ -290,7 +319,7 @@ int menu()
     printf("======================\n");
     printf("  - ATROPELANDO DB -  \n");
     printf("======================\n");
-    printf("[1] Novo Cadastro\n[2] Pesquisar Cadastro\n[3] Modificar Cadastro\n[4] Remover Cadastro\n[5] Deletar BD\n[6] Sair\n>> ");
+    printf("[1] Novo Cadastro\n[2] Pesquisar Cadastro\n[3] Modificar Cadastro\n[4] Remover Cadastro\n[5] Deletar DB\n[6] Sair\n>> ");
     scanf("%i", &op);
     fflush(stdin);
 
