@@ -315,7 +315,7 @@ void deletarBD(){
 int menu()
 {
     setlocale(LC_ALL, "");
-    system("cls");
+    //system("cls");
     printf("======================\n");
     printf("  - ATROPELANDO DB -  \n");
     printf("======================\n");
