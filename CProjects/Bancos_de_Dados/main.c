@@ -1,12 +1,13 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <locale.h>
 #include <time.h>
 
 FILE *fp, *fptemp;
-char cpftemp[15];
 time_t ano;
-char strtemp[15];
+char cpftemp[15] = {0};
+char strtemp[150] = {0};
 int flag = 0;
 int op;
 
@@ -14,7 +15,7 @@ struct dados
 {
 char nome[150];
 char idade[15];
-short int nasc;
+int nasc;
 char cpf[15];
 char fone[15];
 char email[150];
@@ -25,21 +26,48 @@ struct temp
 {
     char nome[150];
     char idade[15];
-    short int nasc;
+    int nasc;
     char cpf[15];
     char fone[15];
     char email[150];
     char endereco[150];
 }pessoatemp;
 
-void registrar()
+void validar(char *var, char msg[100]){
+    while(strlen(var) == 0){
+        system("cls");
+        printf("Preencha o campo! Tente novamente...\n");
+        printf("%s", msg);
+        gets(var);
+    }
+}
+
+int registrar()
 {
     setlocale(LC_ALL, "");
     ano = time(NULL)/60/60/24/30/12+1969;
 
+    printf("CPF: ");
+    gets(cpftemp);
+    validar(cpftemp, "CPF: ");
+    fp = fopen("arquivo.txt", "rb");
+    while(fread(&pessoa, sizeof(pessoa), 1, fp)==1){
+        if(strcmp(pessoa.cpf, cpftemp) == 0){
+            printf("Este CPF ja foi cadastrado! Tente novamente...\n");
+            printf("[Pressione ENTER para retornar ao MENU]");
+            getchar();
+            return 0;
+        }
+        else if(feof(fp) != 0){
+            break;
+        }
+    }
+    strcpy(pessoa.cpf, cpftemp);
+    fclose(fp);
+
     printf("Nome: ");
     gets(pessoa.nome);
-    printf("%s\n", pessoa.nome);
+    validar(pessoa.nome, "Nome: ");
 
     do{
         printf("Ano de nascimento: ");
@@ -50,43 +78,25 @@ void registrar()
             printf("Ano invalido, tente novamente...\n");
         }
     }while(pessoa.nasc > ano);
-    
-    printf("CPF: ");
-    gets(cpftemp);
-    fp = fopen("arquivo.txt", "rb+");
-    while(fread(&pessoa, sizeof(pessoa), 1, fp)==1){
-        printf("%s", pessoa.nome);
-        if(strcmp(pessoa.cpf, cpftemp)==0 || feof(fp)){
-            break;
-            }
-        }
-    while(strcmp(pessoa.cpf, cpftemp)==0){
-        system("cls");
-        printf("Este CPF ja foi cadastrado! Tente novamente...\n");
-        printf("CPF: ");
-        gets(cpftemp);
-    }
-    fclose(fp);
-    strcpy(pessoa.cpf, cpftemp);
-    printf("%s\n", pessoa.nome);
-
-    printf("Numero de telefone: ");
-    gets(pessoa.fone);
-    printf("E-Mail: ");
-    gets(pessoa.email);
-    printf("Endereco: ");
-    gets(pessoa.endereco);
-
-    sprintf(strtemp, "%i", ano-pessoa.nasc);
-    strcpy(pessoa.idade, strtemp);
+    sprintf(pessoa.idade, "%i", ano-pessoa.nasc);
     if (ano-pessoa.nasc == 0){
         strcpy(pessoa.idade, "recem-nascido");
     }
-    
+
+    printf("Numero de telefone: ");
+    gets(pessoa.fone);
+    validar(pessoa.fone, "Numero de telefone: ");
+    printf("E-Mail: ");
+    gets(pessoa.email);
+    validar(pessoa.email, "E-Mail: ");
+    printf("Endereco: ");
+    gets(pessoa.endereco);
+    validar(pessoa.endereco, "Endereco: ");
+
     fp = fopen("arquivo.txt", "ab+");
-    fwrite(&pessoa, sizeof(struct dados), 1, fp);
+    fwrite(&pessoa, sizeof(pessoa), 1, fp);
     fclose(fp);
-    printf("\nRegistro efetuado com sucesso...\n[Pressione qualquer tecla para continuar]");
+    printf("\nCadastro efetuado com sucesso...\n[Pressione ENTER para continuar]");
     getchar();
 }
 
@@ -95,16 +105,17 @@ void pesquisar()
     setlocale(LC_ALL, "");
 
     fflush(stdin);
-    printf("Digite o CPF do usuario: ");
+    printf("Digite o CPF: ");
     gets(cpftemp);
+    validar(cpftemp, "Digite o CPF: ");
 
     fp = fopen("arquivo.txt", "rb");
-    while(fread(&pessoa, sizeof(pessoa), 1, fp)==1)
+    while(fread(&pessoa, sizeof(struct dados), 1, fp)==1)
     {
         if(strcmp(pessoa.cpf, cpftemp)==0)
         {
             flag++;
-            printf("Exibindo registro do usuario...\n\n");
+            printf("Exibindo cadastro...\n\n");
             printf("Nome: %s\n", pessoa.nome);
             printf("Idade: %s\n", pessoa.idade);
             printf("Ano de nascimento: %i\n", pessoa.nasc);
@@ -115,11 +126,11 @@ void pesquisar()
         }
     }
     if(flag == 0){
-        printf("\nNao foi possivel encontrar o usuario. Tente novamente.");
+        printf("\nNao foi possivel encontrar o cadastro. Tente novamente.");
     }
     flag = 0;
     fclose(fp);
-    printf("\n[Pressione qualquer tecla para continuar]");
+    printf("\n[Pressione ENTER para continuar]");
     getchar();
 }
 
@@ -130,8 +141,9 @@ void modificar()
     char cpftemp[150];
 
     fflush(stdin);
-    printf("Digite o CPF do usuario que deseja alterar: ");
+    printf("Digite o CPF do cadastro que deseja alterar: ");
     gets(cpftemp);
+    validar(cpftemp, "Digite o CPF do cadastro que deseja alterar: ");
 
     fp = fopen("arquivo.txt", "rb+");
     fptemp = fopen("temp.txt", "ab+");
@@ -139,7 +151,7 @@ void modificar()
     {
         if(strcmp(pessoa.cpf, cpftemp)==0)
         {
-            printf("Usuario encontrado!\n\n");
+            printf("Cadastro encontrado!\n\n");
             printf("Nome: %s\n", pessoa.nome);
             printf("Idade: %s\n", pessoa.idade);
             printf("Ano de Nascimento: %i\n", pessoa.nasc);
@@ -180,6 +192,7 @@ void modificar()
                 if (ano-pessoatemp.nasc == 0){
                     strcpy(pessoatemp.idade, "recem-nascido");
                 }
+                break;
 
             case 3:
                 printf("Numero de telefone: ");
@@ -195,6 +208,8 @@ void modificar()
                 printf("Endereco: ");
                 gets(pessoatemp.endereco);
                 break;
+            default:
+                continue;
             }
             fwrite(&pessoatemp, sizeof(struct temp), 1, fptemp);
             flag++;
@@ -204,17 +219,17 @@ void modificar()
         }
     }
     if(flag == 0){
-        printf("\nNao foi possivel encontrar o usuario. Tente novamente.");
+        printf("\nNao foi possivel encontrar o cadastro. Tente novamente.");
     }
-    else if(flag == 1){
-        printf("\nUsuario alterado com sucesso.");
+    else{
+        printf("\nCadastro alterado com sucesso.");
+        flag = 0;
     }
-    flag = 0;
     fclose(fptemp);
     fclose(fp);
     remove("arquivo.txt");
     rename("temp.txt", "arquivo.txt");
-    printf("\n[Pressione qualquer tecla para continuar]");
+    printf("\n[Pressione ENTER para continuar]");
     getchar();
 }
 
@@ -223,31 +238,31 @@ void remover()
     char cpftemp[150];
 
     fflush(stdin);
-    printf("Digite o CPF do usuario: ");
+    printf("Digite o CPF: ");
     gets(cpftemp);
+    validar(cpftemp, "Digite o CPF: ");
 
     fp = fopen("arquivo.txt", "rb+");
     fptemp = fopen("temp.txt", "ab+");
 
-    while(fread(&pessoa, sizeof(pessoa), 1, fp)==1)
-    {
+    while(fread(&pessoa, sizeof(pessoa), 1, fp)==1){
         if(strcmp(pessoa.cpf, cpftemp)==0){
             flag++;
-            printf("\nUsuario encontrado. Removendo...");
+            printf("\nCadastro encontrado. Removendo...");
         }
-        else{
+        else if(strcmp(pessoa.cpf, cpftemp)!=0){
             fwrite(&pessoa, sizeof(struct dados), 1, fptemp);
         }
     }
     if(flag == 0){
-        printf("\nNao foi possivel encontrar o usuario. Tente novamente.");
+        printf("\nNao foi possivel encontrar o cadastro. Tente novamente.");
     }
     flag = 0;
     fclose(fp);
     fclose(fptemp);
     remove("arquivo.txt");
     rename("temp.txt", "arquivo.txt");
-    printf("\n[Pressione qualquer tecla para continuar]");
+    printf("\n[Pressione ENTER para continuar]");
     getchar();
 }
 
@@ -258,6 +273,7 @@ void deletarBD(){
     fflush(stdin);
 
     if (op == 1){
+        fclose(fp);
         remove("arquivo.txt");
         printf("\nDeletado com sucesso.\n[Presisone qualquer tecla para continuar]");
         getchar();
@@ -268,7 +284,10 @@ int menu()
 {
     setlocale(LC_ALL, "");
     system("cls");
-    printf("[1] Registrar pessoa\n[2] Pesquisar registro\n[3] Modificar registro\n[4] Remover registro\n[5] Deletar BD\n[6] Sair\n>> ");
+    printf("======================\n");
+    printf("  - ATROPELANDO DB -  \n");
+    printf("======================\n");
+    printf("[1] Novo Cadastro\n[2] Pesquisar Cadastro\n[3] Modificar Cadastro\n[4] Remover Cadastro\n[5] Deletar BD\n[6] Sair\n>> ");
     scanf("%i", &op);
     fflush(stdin);
 
