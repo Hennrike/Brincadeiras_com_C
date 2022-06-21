@@ -1,3 +1,6 @@
+// Nome: Henrique Martins Dutra
+// Turma: 4324
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
