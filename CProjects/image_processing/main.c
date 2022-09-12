@@ -2,7 +2,7 @@
 // Turma: 4324
 #include <stdio.h>
 #include <inttypes.h>
-#pragma pack(1); // remove o "padding", ou espaçamento, da struct
+#pragma pack(1) // remove o "padding", ou espaçamento, da struct
 
 typedef struct
 {
@@ -26,42 +26,61 @@ typedef struct
     uint32_t importantcolors; // inutilizado, valor 0
 }BMP_header;
 
-int c;
+typedef struct{
+    unsigned char blue;
+    unsigned char green;
+    unsigned char red;
+}BGRvalues;
+
+int c, flag=0;
 FILE *fp;
 FILE *fptemp;
 
 void filtro_RGB(BMP_header fileheader, int opt, int imgsize, char filen[100]){
-    // "data" contém os valores das cores em formato BGR
-    unsigned char data[imgsize]; // "unsigned char" foi escolhido por possuir tamanho 256
+    BGRvalues BGR;
     fp = fopen(filen, "rb");
-    // Lendo cada byte que compõe a imagem
-    fread(&data, sizeof(unsigned char), imgsize, fp);
-    fclose(fp);
-
     switch(opt){
         case 0: // vermelho
-        for (c=2;c<imgsize;c+=3){
-            data[c] = 255;
+        fptemp = fopen("red.bmp", "ab");
+        fwrite(&fileheader, sizeof(fileheader), 1, fptemp);
+        fseek(fp, 40, SEEK_SET);
+        while(fread(&BGR, sizeof(BGR), 1, fp)!=imgsize/3){
+            BGR.red = 255;
+            fwrite(&BGR, sizeof(BGR), 1, fptemp);
+            flag++;
+            if(flag == imgsize/3){
+                flag = 0;
+                break;
+            }
         }
-        fp = fopen("red.bmp", "ab");
-        break;
-
         case 1: // verde
-        for (c=1;c<imgsize;c+=3){
-            data[c] = 255;
+        fptemp = fopen("green.bmp", "ab");
+        fwrite(&fileheader, sizeof(fileheader), 1, fptemp);
+        fseek(fp, 40, SEEK_SET);
+        while(fread(&BGR, sizeof(BGR), 1, fp)!=imgsize/3){
+            BGR.green = 255;
+            fwrite(&BGR, sizeof(BGR), 1, fptemp);
+            flag++;
+            if(flag == imgsize/3){
+                flag = 0;
+                break;
+            }
         }
-        fp = fopen("green.bmp", "ab");
-        break;
-
         case 2: // azul
-        for (c=0;c<imgsize;c+=3){
-            data[c] = 255;
+        fptemp = fopen("blue.bmp", "ab");
+        fwrite(&fileheader, sizeof(fileheader), 1, fptemp);
+        fseek(fp, 40, SEEK_SET);
+        while(fread(&BGR, sizeof(BGR), 1, fp)!=imgsize/3){
+            BGR.blue = 255;
+            fwrite(&BGR, sizeof(BGR), 1, fptemp);
+            flag++;
+            if(flag == imgsize/3){
+                flag = 0;
+                break;
+            }
         }
-        fp = fopen("blue.bmp", "ab");
-        break;
     }
-    fwrite(&fileheader, sizeof(fileheader), 1, fp);
-    fwrite(&data, sizeof(unsigned char), imgsize, fp);
+    fclose(fptemp);
     fclose(fp);
 }
 
