@@ -1,29 +1,28 @@
 // Nome: Henrique Martins Dutra
 // Turma: 4324
 #include <stdio.h>
-#include <inttypes.h>
 #pragma pack(1) // remove o "padding", ou espaçamento, da struct
 
 typedef struct
 {
     // File Header
-    uint16_t img_t;
-    uint32_t size;
-    uint16_t res1;
-    uint16_t res2;
-    uint32_t offset;
+    short int img_t;
+    int size;
+    short int res1;
+    short int res2;
+    int offset;
     // BitMap Header
-    uint32_t header_size;
-    uint32_t img_width;
-    uint32_t img_height;
-    uint16_t img_planes;
-    uint16_t bitsppx;
-    uint32_t compression_t; // inutilizado, valor 0
-    uint32_t img_size;
-    uint32_t xresolution;
-    uint32_t yresolution;
-    uint32_t ncolors; // inutilizado, valor 0
-    uint32_t importantcolors; // inutilizado, valor 0
+    int header_size;
+    int img_width;
+    int img_height;
+    short int img_planes;
+    short int bitsppx;
+    int compression_t; // inutilizado, valor 0
+    int img_size;
+    int xresolution;
+    int yresolution;
+    int ncolors; // inutilizado, valor 0
+    int importantcolors; // inutilizado, valor 0
 }BMP_header;
 
 typedef struct{
