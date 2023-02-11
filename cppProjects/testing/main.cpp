@@ -1,8 +1,8 @@
 #include <iostream>
 
 int main(){
-    auto result = (10 == 20) > 0;
-    std::cout << result << std::endl;
+    fprintf(stderr, "An error ocurred");
+    std::cout << "Hello" << '\n';
 
     return 0;
 }
